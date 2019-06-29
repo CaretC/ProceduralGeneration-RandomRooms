@@ -8,65 +8,52 @@ namespace RandomRooms
     {
         static void Main(string[] args)
         {
-            // ************** Actual *************************************
-            //Console.CursorVisible = false;
-
-            //RoomsMap roomMap = new RoomsMap();
-
-            //bool[,] map = roomMap.initializeMap();
-            //List<int[]> centrePoints = new List<int[]>();
-
-
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    centrePoints.Add(roomMap.AddRoom(map));
-            //}
-
-            //roomMap.PrintMap(map);
-
-            //foreach (var centre in centrePoints)
-            //{
-            //    roomMap.PrintCentre(centre);
-            //}
-
-            //roomMap.PrintCorridors(centrePoints);
-
-            //Console.ReadLine();
-
-
-            // ************** Test *************************************
+            // =========== Setup =========== 
             Console.CursorVisible = false;
 
+            // =========== Classes =========== 
             RoomsMap roomMap = new RoomsMap();
 
+            // =========== Variables =========== 
+            
+            // Stores map. 
             bool[,] map = roomMap.initializeMap();
+
+            // Stores the centre point of all rooms created.
             List<int[]> centrePoints = new List<int[]>();
 
+            // HACK: Sets the delay between printing each corridore. Development tool that can be removed later.
+            int corridorPrintDelay = 0;
 
+            // =========== Map Generation =========== 
+
+            // Toggle DEBUG output from roomMap.
+            roomMap.EnableDebugOutput = true;
+
+            // Add rooms to map
             for (int i = 0; i < 10; i++)
             {
-                centrePoints.Add(roomMap.AddRoom(map));
+                centrePoints.Add(roomMap.AddRoom(i, map));
             }
 
+            // Print map to console with rooms.
             roomMap.PrintMap(map);
+             
+            // Print the corridors between rooms.
+            for (int i = 0; i < centrePoints.Count; i++)
+            {
+                roomMap.PrintCorridors(i, centrePoints);
+                // HACK: This is just a devleopment aid. It can be removed later.
+                Thread.Sleep(corridorPrintDelay);
+            }
 
+            // Mark the centre of each room with its room number.
             for (int i = 0; i < centrePoints.Count; i++)
             {
                 roomMap.PrintCentre(centrePoints[i], i);
             }
 
-            for (int i = 0; i < centrePoints.Count; i++)
-            {
-                roomMap.PrintCorridors(i, centrePoints);
-                Thread.Sleep(200);
-            }
-
-            for (int i = 0; i < centrePoints.Count; i++)
-            {
-                roomMap.SelectClosestRoom(i, centrePoints);
-            }
-
-
+            // Wait till user exits.
             Console.ReadLine();
 
         }
