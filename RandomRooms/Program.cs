@@ -31,9 +31,16 @@ namespace RandomRooms
             roomMap.EnableDebugOutput = true;
 
             // Add rooms to map
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 30; i++)
             {
-                centrePoints.Add(roomMap.AddRoom(i, map));
+                // Attempt to create room. On room spawn fail [0, 0] is returned.
+                int[] roomCenter = roomMap.AddRoom(i, map);
+
+                // If room center is not [0, 0] add the room to the center points list.
+                if (roomCenter[0] != 0 && roomCenter[1] != 0)
+                {
+                    centrePoints.Add(roomCenter);
+                }
             }
 
             // Print map to console with rooms.
@@ -42,7 +49,7 @@ namespace RandomRooms
             // Print the corridors between rooms.
             for (int i = 0; i < centrePoints.Count; i++)
             {
-                roomMap.PrintCorridors(i, centrePoints);
+                roomMap.PrintCorridor(i, centrePoints);
                 // HACK: This is just a devleopment aid. It can be removed later.
                 Thread.Sleep(corridorPrintDelay);
             }
@@ -50,7 +57,7 @@ namespace RandomRooms
             // Mark the centre of each room with its room number.
             for (int i = 0; i < centrePoints.Count; i++)
             {
-                roomMap.PrintCentre(centrePoints[i], i);
+                roomMap.PrintCentre(centrePoints[i]);
             }
 
             // Wait till user exits.

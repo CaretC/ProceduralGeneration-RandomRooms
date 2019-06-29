@@ -83,17 +83,34 @@ namespace RandomRooms
             int width = OddNumber(MaxRoomDimention);
             int height = OddNumber(MaxRoomDimention);
             int[] startPoint = { random.Next(1, (Console.WindowWidth - (1 + width))), random.Next(1, (Console.WindowHeight - (1 + height)))};
-            int[] centerPoint = { startPoint[0] + (width / 2), startPoint[1] + (height / 2) };
+            int[] centerPoint = { startPoint[0] + (width / 2), startPoint[1] + (height / 2) };         
 
-            // HACK: Currently only prints out if the room overlaps another in the DEBUG console. 
-            // TODO: Ensure if room overlaps another it is not created.
-            noOverlap(roomNumber, map, startPoint, width, height);
-
-            for (int y = 0; y < height; y++)
+            if (noOverlap(roomNumber, map, startPoint, width, height))
             {
-                for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
                 {
-                    map[(startPoint[0] + x), (startPoint[1] + y)] = false;                    
+                    for (int x = 0; x < width; x++)
+                    {
+                        map[(startPoint[0] + x), (startPoint[1] + y)] = false;
+                    }
+                }
+
+                // Prints DEBUG message
+                if (EnableDebugOutput)
+                {
+                    Debug.WriteLine(String.Format("Room {0} Added.", roomNumber));
+                }
+            }
+
+            else
+            {
+                centerPoint[0] = 0;
+                centerPoint[1] = 0;
+
+                // Prints DEBUG message
+                if (EnableDebugOutput)
+                {
+                    Debug.WriteLine(String.Format("Room {0} Not Added, Overlap Found.", roomNumber));
                 }
             }
 
@@ -144,8 +161,9 @@ namespace RandomRooms
         }
 
         // Takes in the index of a startRoom and the list of all room center points on the map and prints a corridore to the closest room.
-        // BUG: Fix the issue that the closest distance between two rooms will often create a loop as the the closest room for one is also the second room.         
-        public void PrintCorridors(int startRoom, List<int[]> roomCentrePoints)
+        // BUG: Fix the issue that the closest distance between two rooms will often create a loop as the the closest room for one is also the second room. 
+        // TODO: Ensure that corridors are added to the map[,] not just printed to the console.
+        public void PrintCorridor(int startRoom, List<int[]> roomCentrePoints)
         {
             int closest = SelectClosestRoom(startRoom, roomCentrePoints);
 
@@ -169,7 +187,7 @@ namespace RandomRooms
             double closestDistance = 1000;
 
             for (int i = 0; i < rooms.Count; i++)
-            {
+            {                
                     double distance = Math.Sqrt(Math.Pow((rooms[room][0] - rooms[i][0]), 2) + Math.Pow((rooms[room][1] - rooms[i][1]), 2));
 
                     if (distance != 0)
@@ -201,9 +219,9 @@ namespace RandomRooms
             bool noOverlap = false;
             int roomCellCount = 0;
 
-            for (int y = 0; y < height; y++)
+            for (int y = -1; y < ( height + 1 ); y++)
             {
-                for (int x = 0; x < width; x++)
+                for (int x =  -1; x < ( width + 1 ); x++)
                 {
                     int xPos = startPoint[0] + x;
                     int yPos = startPoint[1] + y;
